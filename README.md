@@ -6,6 +6,6 @@
 
 2. In your BigCommerce backend go to: Storefront -> Script Manager -> click on Create a script
 
-3. Enter a script name e.g. Awin Sovendus Script, set placement to footer, set location to order confirmation, set the script category to essential, set the script type to script. 
+3. Enter a script name e.g. Sovendus Script, set placement to footer, set location to order confirmation, set the script category to essential, set the script type to script. 
 
 4. Paste the script into the script contents text area and click on save on the bottom right
