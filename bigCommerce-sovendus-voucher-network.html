@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  // script version 1.0.0
+  // script version 1.1.0
   var sovendusIdsByCountry = {
     // Make sure to use the right country code and replace source and medium id with the ones we provided
     DE: {
@@ -29,55 +29,56 @@
     // },
     // Remove until here
   };
+  waitForElement(".orderConfirmation-section").then((elm) => {
+    const orderId = document
+      .querySelectorAll('[data-test="order-confirmation-order-number-text"]')[0]
+      .querySelector("span>strong").innerText;
+    fetch(window.location.origin + "/api/storefront/orders/" + orderId, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (sovendusIdsByCountry[response.billingAddress.countryCode]) {
+          window.sovIframes = window.sovIframes || [];
+          window.sovIframes.push({
+            trafficSourceNumber:
+              sovendusIdsByCountry[response.billingAddress.countryCode]
+                .trafficSourceNumber,
+            trafficMediumNumber:
+              sovendusIdsByCountry[response.billingAddress.countryCode]
+                .trafficMediumNumber,
+            sessionId: response.cartId,
+            timestamp: Math.floor(Date.now() / 1000),
+            orderId: orderId,
+            orderValue:
+              response.orderAmount -
+              response.taxTotal -
+              response.shippingCostTotal,
+            orderCurrency: response.currency.code,
+            usedCouponCode:
+              response.coupons?.length > 0 ? response.coupons[0].code : "",
+            iframeContainerId: "sovendus-container-1",
+          });
+          const [streetName, streetNumber] = splitStreetAndStreetNumber(
+            response.billingAddress.address1
+          );
+          window.sovConsumer = window.sovConsumer || {};
+          window.sovConsumer = {
+            consumerSalutation: "",
+            consumerFirstName: response.billingAddress.firstName,
+            consumerLastName: response.billingAddress.lastName,
+            consumerEmail: response.billingAddress.email,
+            consumerPhone: response.billingAddress.phone,
+            consumerStreet: streetName,
+            consumerStreetNumber: streetNumber,
+            consumerCity: response.billingAddress.city,
+            consumerZipcode: response.billingAddress.postalCode,
+            consumerCountry: response.billingAddress.countryCode,
+          };
 
-  const orderId = "%%ORDER_ID%%";
-  fetch(window.location.origin + "/api/storefront/orders/" + orderId, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (sovendusIdsByCountry[response.billingAddress.countryCode]) {
-        window.sovIframes = window.sovIframes || [];
-        window.sovIframes.push({
-          trafficSourceNumber:
-            sovendusIdsByCountry[response.billingAddress.countryCode]
-              .trafficSourceNumber,
-          trafficMediumNumber:
-            sovendusIdsByCountry[response.billingAddress.countryCode]
-              .trafficMediumNumber,
-          sessionId: response.cartId,
-          timestamp: Math.floor(Date.now() / 1000),
-          orderId: orderId,
-          orderValue:
-            response.orderAmount -
-            response.taxTotal -
-            response.shippingCostTotal,
-          orderCurrency: response.currency.code,
-          usedCouponCode:
-            response.coupons?.length > 0 ? response.coupons[0].code : "",
-          iframeContainerId: "sovendus-container-1",
-        });
-        const [streetName, streetNumber] = splitStreetAndStreetNumber(
-          response.billingAddress.address1
-        );
-        window.sovConsumer = window.sovConsumer || {};
-        window.sovConsumer = {
-          consumerSalutation: "",
-          consumerFirstName: response.billingAddress.firstName,
-          consumerLastName: response.billingAddress.lastName,
-          consumerEmail: response.billingAddress.email,
-          consumerPhone: response.billingAddress.phone,
-          consumerStreet: streetName,
-          consumerStreetNumber: streetNumber,
-          consumerCity: response.billingAddress.city,
-          consumerZipcode: response.billingAddress.postalCode,
-          consumerCountry: response.billingAddress.countryCode,
-        };
-
-        sovDiv = document.createElement("div");
-        sovDiv.id = "sovendus-container-1";
-        waitForElement(".cart-header").then((elm) => {
+          sovDiv = document.createElement("div");
+          sovDiv.id = "sovendus-container-1";
           const heading = document.querySelectorAll(
             '[data-test="order-confirmation-heading"]'
           )[0];
@@ -94,43 +95,44 @@
           sovScript.src = sovJsFile;
           const body = document.querySelector("body");
           body.appendChild(sovScript);
-        });
-        function splitStreetAndStreetNumber(street) {
-          if (street.length > 0) {
-            const match = street.trim().match(/([0-9/ -]+ ?[a-zA-Z]?(\s|$))/g);
+          function splitStreetAndStreetNumber(street) {
+            if (street.length > 0) {
+              const match = street
+                .trim()
+                .match(/([0-9/ -]+ ?[a-zA-Z]?(\s|$))/g);
 
-            if (match) {
-              const housenr = match[match.length - 1];
-              const consumerStreet = street
-                .replace(new RegExp(`\\s*${housenr}|/`, "g"), "")
-                .trim();
-              const consumerStreetNumber = housenr.trim();
-              return [consumerStreet, consumerStreetNumber];
-            }
-          }
-          return [street, ""];
-        }
-
-        function waitForElement(selector) {
-          return new Promise((resolve) => {
-            if (document.querySelector(selector)) {
-              return resolve(document.querySelector(selector));
-            }
-
-            const observer = new MutationObserver((mutations) => {
-              if (document.querySelector(selector)) {
-                observer.disconnect();
-                resolve(document.querySelector(selector));
+              if (match) {
+                const housenr = match[match.length - 1];
+                const consumerStreet = street
+                  .replace(new RegExp(`\\s*${housenr}|/`, "g"), "")
+                  .trim();
+                const consumerStreetNumber = housenr.trim();
+                return [consumerStreet, consumerStreetNumber];
               }
-            });
-
-            observer.observe(document.body, {
-              childList: true,
-              subtree: true,
-            });
-          });
+            }
+            return [street, ""];
+          }
         }
+      })
+      .catch((err) => console.error("Failed to load sovendus", err));
+  });
+  function waitForElement(selector) {
+    return new Promise((resolve) => {
+      if (document.querySelector(selector)) {
+        return resolve(document.querySelector(selector));
       }
-    })
-    .catch((err) => console.error("Failed to load sovendus", err));
+
+      const observer = new MutationObserver((mutations) => {
+        if (document.querySelector(selector)) {
+          observer.disconnect();
+          resolve(document.querySelector(selector));
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    });
+  }
 </script>
