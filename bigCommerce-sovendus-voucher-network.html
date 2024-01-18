@@ -1,5 +1,4 @@
 <script type="text/javascript">
-  // script version 1.1.0
   var sovendusIdsByCountry = {
     // Make sure to use the right country code and replace source and medium id with the ones we provided
     DE: {
@@ -59,6 +58,7 @@
             usedCouponCode:
               response.coupons?.length > 0 ? response.coupons[0].code : "",
             iframeContainerId: "sovendus-container-1",
+            integrationType: "bigcommerce-1.1.1"
           });
           const [streetName, streetNumber] = splitStreetAndStreetNumber(
             response.billingAddress.address1
