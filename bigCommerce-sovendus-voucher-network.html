@@ -6,6 +6,14 @@
       trafficMediumNumber: "YOUR_MEDIUM_ID",
     },
     // If you have only one country, you can remove the following lines
+    // "CH-fr" : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
+    // "CH-de" : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
     // AT : {
     //     trafficSourceNumber: 'YOUR_SOURCE_ID',
     //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
@@ -26,6 +34,22 @@
     //     trafficSourceNumber: 'YOUR_SOURCE_ID',
     //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
     // },
+    // SE : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
+    // PL : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
+    // "BE-nl" : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
+    // "BE-fr" : {
+    //     trafficSourceNumber: 'YOUR_SOURCE_ID',
+    //     trafficMediumNumber: 'YOUR_MEDIUM_ID',
+    // },
     // Remove until here
   };
   waitForElement(".orderConfirmation-section").then((elm) => {
@@ -38,7 +62,13 @@
     })
       .then((response) => response.json())
       .then((response) => {
-        if (sovendusIdsByCountry[response.billingAddress.countryCode]) {
+        const language = document.documentElement.lang.split("-")[0];
+        if (
+          sovendusIdsByCountry[response.billingAddress.countryCode] ||
+          sovendusIdsByCountry[
+            response.billingAddress.countryCode + "-" + language
+          ]
+        ) {
           window.sovIframes = window.sovIframes || [];
           window.sovIframes.push({
             trafficSourceNumber:
@@ -58,7 +88,7 @@
             usedCouponCode:
               response.coupons?.length > 0 ? response.coupons[0].code : "",
             iframeContainerId: "sovendus-container-1",
-            integrationType: "bigcommerce-1.1.1"
+            integrationType: "bigcommerce-1.1.2",
           });
           const [streetName, streetNumber] = splitStreetAndStreetNumber(
             response.billingAddress.address1
