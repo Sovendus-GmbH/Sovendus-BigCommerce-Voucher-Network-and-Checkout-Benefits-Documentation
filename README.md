@@ -1,11 +1,24 @@
 # Sovendus BigCommerce Voucher Network and Checkout Benefits Documentation
 
-## 🛒 Add the Sovendus script
 
-1.	Copy the BigCommerce script from [here](https://github.com/Sovendus-GmbH/Sovendus-BigCommerce-Voucher-Network-and-Checkout-Benefits-Documentation/raw/main/bigCommerce-sovendus-voucher-network.html) and replace YOUR_SOURCE_NUMBER and YOUR_MEDIUM_NUMBER with the one we provide you in your integration documentation. Make sure to use the right country code. If you are using sovendus for multiple countries, make sure you define YOUR_SOURCE_NUMBER and YOUR_MEDIUM_NUMBER in the script as well for each country.
+## 🛒 Add the Sovendus Script
 
-2. In your BigCommerce backend go to: Storefront -> Script Manager -> click on Create a script.
 
-3. Enter a script name e.g. Sovendus Script, set placement to footer, set location to order confirmation, set the script category to essential, set the script type to script. 
+1. **Copy the Script**  
+   Download the BigCommerce script from [this link](https://github.com/Sovendus-GmbH/Sovendus-BigCommerce-Voucher-Network-and-Checkout-Benefits-Documentation/raw/main/bigCommerce-sovendus-voucher-network.html).  
+   Replace `YOUR_SOURCE_NUMBER` and `YOUR_MEDIUM_NUMBER` with the values provided in your integration documentation.  
+   Ensure you use the correct country code. For multiple countries, define `YOUR_SOURCE_NUMBER` and `YOUR_MEDIUM_NUMBER` for each country in the script.
 
-4. Paste the script into the script contents text area and click on save on the bottom right.
+2. **Access the BigCommerce Backend**  
+   Navigate to:  
+   **Storefront** → **Script Manager** → Click on **Create a Script**.
+
+3. **Configure the Script**  
+   - **Script Name**: Enter a name, e.g., `Sovendus Script`.  
+   - **Placement**: Set to `Footer`.  
+   - **Location**: Set to `Order Confirmation`.  
+   - **Category**: Set to `Essential`.  
+   - **Type**: Set to `Script`.
+
+4. **Paste and Save**  
+   Paste the script into the **Script Contents** text area and click **Save** at the bottom right.
